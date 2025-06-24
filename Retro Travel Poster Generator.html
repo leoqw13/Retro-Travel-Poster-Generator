@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Travel Poster Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;700&family=Bangers&family=Special+Elite&family=Rye&family=Yesteryear&family=Caveat:wght@700&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Playfair Display', serif;
+            background: url('https://www.transparenttextures.com/patterns/paper-fibers.png'), linear-gradient(to bottom, #FDF6E3, #F5E6CC);
+            background-attachment: fixed;
+        }
+
+        .container {
+            background: #FDF6E3;
+            border: 4px double #8B4513;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            position: relative;
+            padding: 2rem;
+            border-radius: 12px;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px dashed #DAA520;
+            border-radius: 16px;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            color: #8B4513;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-panel,
+        .canvas-panel {
+            background: #FFF8E1;
+            border: 2px solid #8B4513;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+        }
+
+        label {
+            font-family: 'Caveat', cursive;
+            color: #6B4E31;
+            font-size: 1.2rem;
+        }
+
+        select,
+        input[type="text"] {
+            background: #FFF8E1;
+            border: 2px double #8B4513;
+            border-radius: 6px;
+            padding: 0.5rem;
+            font-family: 'Playfair Display', serif;
+            color: #6B4E31;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        select:focus,
+        input[type="text"]:focus {
+            border-color: #DAA520;
+            box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.3);
+            outline: none;
+        }
+
+        .retro-button {
+            background: linear-gradient(to bottom, #DAA520, #B8860B);
+            border: 2px solid #8B4513;
+            border-radius: 6px;
+            padding: 0.75rem;
+            font-family: 'Bebas Neue', sans-serif;
+            color: #FFF8E1;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .retro-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="checkbox"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #FFF8E1;
+            border: 2px solid #8B4513;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"]:checked {
+            background: #DAA520;
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✔';
+            color: #6B4E31;
+            font-size: 14px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .canvas-panel {
+            position: relative;
+        }
+
+        .canvas-panel::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            background: url('https://www.transparenttextures.com/patterns/worn-dots.png'), #8B4513;
+            border-radius: 12px;
+            z-index: -1;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen">
+    <div class="container mx-auto p-4 max-w-4xl relative">
+        <h1 class="text-4xl font-bold text-center mb-8">Retro Travel Poster Generator</h1>
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- Controls -->
+            <div class="w-full md:w-1/3 control-panel">
+                <div class="mb-6">
+                    <label class="block mb-2" for="city">Select City</label>
+                    <select id="city" class="w-full">
+                        <option value="Paris">Paris</option>
+                        <option value="New York">New York</option>
+                        <option value="Tokyo">Tokyo</option>
+                        <option value="London">London</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label class="block mb-2" for="colorScheme">Color Scheme</label>
+                    <select id="colorScheme" class="w-full">
+                        <option value="none">None</option>
+                        <option value="vibrant">Vibrant</option>
+                        <option value="pastel">Pastel</option>
+                        <option value="monochrome">Monochrome</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label class="block mb-2" for="font">Select Font</label>
+                    <select id="font" class="w-full">
+                        <option value="Bebas Neue">Bebas Neue</option>
+                        <option value="Cinzel">Cinzel</option>
+                        <option value="Bangers">Bangers</option>
+                        <option value="Special Elite">Special Elite</option>
+                        <option value="Rye">Rye</option>
+                        <option value="Yesteryear">Yesteryear</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label class="block mb-2">Landmarks (Select up to 3)</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center"><input type="checkbox" class="landmark mr-2" value="tower">
+                            Tower</label>
+                        <label class="flex items-center"><input type="checkbox" class="landmark mr-2" value="bridge">
+                            Bridge</label>
+                        <label class="flex items-center"><input type="checkbox" class="landmark mr-2" value="statue">
+                            Statue</label>
+                        <label class="flex items-center"><input type="checkbox" class="landmark mr-2" value="temple">
+                            Temple</label>
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="block mb-2" for="slogan">Custom Slogan</label>
+                    <input type="text" id="slogan" class="w-full" placeholder="Enter your slogan">
+                </div>
+                <button id="download" class="w-full retro-button">Download Poster</button>
+            </div>
+            <!-- Canvas -->
+            <div class="w-full md:w-2/3 canvas-panel">
+                <div id="canvas-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let city = 'Paris';
+        let colorScheme = 'none';
+        let selectedFont = 'Bebas Neue';
+        let landmarks = [];
+        let slogan = '';
+        let images = {};
+        let canvas;
+
+        function preload() {
+            images['Tokyo'] = loadImage('https://imgcp.aacdn.jp/img-a/1200/auto/global-aaj-front/article/2018/08/5b616c06b2309_5b61692563510_1011155896.jpg');
+            images['New York'] = loadImage('https://cdn.artphotolimited.com/images/59bfc61aa53127652ceff7d8/1000x1000/new-york-vintage-3.jpg');
+            images['Paris'] = loadImage('https://thumbs.dreamstime.com/b/par%C3%ADs-art%C3%ADstica-francia-torre-eiffel-vista-de-la-calle-con-el-coche-retro-rojo-de-la-limusina-63606811.jpg');
+            images['London'] = loadImage('https://muralsyourway.vtexassets.com/arquivos/ids/236753/Vintage-View-of-Big-Ben-in-London-Wall-Mural.jpg?v=638257472707300000');
+        }
+
+        function setup() {
+            let container = document.getElementById('canvas-container');
+            let containerWidth = container.offsetWidth;
+            let canvasHeight = containerWidth;
+            canvas = createCanvas(containerWidth, canvasHeight);
+            canvas.parent('canvas-container');
+
+
+            WebFont.load({
+                google: {
+                    families: ['Bebas Neue', 'Cinzel:400,700', 'Bangers', 'Special Elite', 'Rye', 'Yesteryear', 'Caveat:700', 'Playfair Display:400,700']
+                },
+                active: () => {
+
+                    updatePoster();
+                },
+                inactive: () => {
+
+                    console.error('Fonts failed to load');
+                    updatePoster();
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                let newWidth = container.offsetWidth;
+                let newHeight = newWidth;
+                resizeCanvas(newWidth, newHeight);
+                updatePoster();
+            });
+
+            document.getElementById('font').addEventListener('change', (e) => {
+                selectedFont = e.target.value;
+                updatePoster();
+            });
+
+            document.getElementById('city').addEventListener('change', (e) => {
+                city = e.target.value;
+                updatePoster();
+            });
+
+            document.getElementById('colorScheme').addEventListener('change', (e) => {
+                colorScheme = e.target.value;
+                updatePoster();
+            });
+
+            document.getElementById('slogan').addEventListener('input', (e) => {
+                slogan = e.target.value;
+                updatePoster();
+            });
+
+            document.querySelectorAll('.landmark').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    if (e.target.checked && landmarks.length >= 3) {
+                        e.target.checked = false;
+                        return;
+                    }
+                    landmarks = Array.from(document.querySelectorAll('.landmark:checked')).map(cb => cb.value);
+                    updatePoster();
+                });
+            });
+
+            document.getElementById('download').addEventListener('click', () => {
+                saveCanvas('travel-poster.png');
+            });
+        }
+
+        function updatePoster() {
+            let colors = {
+                none: {
+                    text: [255, 255, 255],
+                    filter: [0, 0, 0, 0]
+                },
+                vibrant: {
+                    text: [47, 44, 44],
+                    filter: [255, 179, 0, 130]
+                },
+                pastel: {
+                    text: [255, 255, 255],
+                    filter: [255, 182, 193, 75]
+                },
+                monochrome: {
+                    text: [218, 226, 227],
+                    filter: [13, 13, 12, 150]
+                }
+            };
+
+            if (images[city]) {
+                image(images[city], 0, 0, width, height);
+            } else {
+                background(200);
+            }
+
+            // Dynamic filter based on color scheme
+            fill(...colors[colorScheme].filter);
+            rect(0, 0, width, height);
+
+            // City name
+            textFont(selectedFont);
+            fill(colors[colorScheme].text);
+            textSize(width / 8);
+            textAlign(CENTER, TOP);
+            text(city.toUpperCase(), width / 2, width / 8);
+
+            // Slogan
+            textFont(selectedFont);
+            textSize(width / 16);
+            textAlign(CENTER, BOTTOM);
+            text(slogan || 'Visit ' + city, width / 2, height - width / 16);
+
+            // Landmarks with dynamic positioning
+            let positions = [];
+            if (landmarks.length === 1) {
+                positions = [width / 2];
+            } else if (landmarks.length === 2) {
+                let gap = width / 4;
+                positions = [width / 2 - gap / 2, width / 2 + gap / 2];
+            } else if (landmarks.length === 3) {
+                positions = [width / 4, width / 2, 3 * width / 4];
+            }
+
+            for (let i = 0; i < landmarks.length; i++) {
+                drawLandmark(landmarks[i], positions[i], height / 2, colors[colorScheme].text);
+            }
+        }
+
+        function drawLandmark(type, x, y, col) {
+            fill(col);
+            noStroke();
+            let scale = width / 400;
+            if (type === 'tower') {
+                rect(x - 20 * scale, y - 50 * scale, 40 * scale, 100 * scale);
+                triangle(x - 20 * scale, y - 50 * scale, x + 20 * scale, y - 50 * scale, x, y - 80 * scale);
+            } else if (type === 'bridge') {
+                arc(x, y, 80 * scale, 80 * scale, PI, TWO_PI);
+                line(x - 40 * scale, y, x + 40 * scale, y);
+            } else if (type === 'statue') {
+                ellipse(x, y - 30 * scale, 20 * scale, 20 * scale);
+                rect(x - 15 * scale, y - 10 * scale, 30 * scale, 60 * scale);
+            } else if (type === 'temple') {
+                rect(x - 40 * scale, y - 20 * scale, 80 * scale, 40 * scale);
+                triangle(x - 40 * scale, y - 20 * scale, x + 40 * scale, y - 20 * scale, x, y - 60 * scale);
+            }
+        }
+    </script>
+</body>
+
+</html>
